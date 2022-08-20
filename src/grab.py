@@ -186,7 +186,8 @@ def record(config, next_run):
         options.binary_location = config_firefox.get('firefox_location')
     
     # Debug level in geckodriver.log
-    options.log.level = "trace"
+    if logging.root.level < logging.DEBUG:
+        options.log.level = "trace"
     
     options.set_preference("browser.download.folderList", 2)
     options.set_preference("browser.download.manager.showWhenStarting", False)
