@@ -1,5 +1,6 @@
-# Ignore downloads directory
+# WebSDRgrab
 downloads/
+geckodriver.log
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
