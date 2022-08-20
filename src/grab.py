@@ -184,6 +184,10 @@ def record(config, next_run):
     options.headless = config_firefox.getboolean('firefox_headless', fallback=True)
     if config_firefox.get('firefox_location'):
         options.binary_location = config_firefox.get('firefox_location')
+    
+    # Debug level in geckodriver.log
+    # options.log.level = "trace"
+    
     options.set_preference("browser.download.folderList", 2)
     options.set_preference("browser.download.manager.showWhenStarting", False)
     options.set_preference("browser.download.dir", str(download_dir))
