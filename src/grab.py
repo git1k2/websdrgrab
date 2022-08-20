@@ -19,7 +19,7 @@ from selenium.webdriver.firefox.options import Options
 
 
 def create_spectrogram(wav_file=None, output_file_path=None, next_run=None, start_time=None, spec_config=None):
-    logging.info(f"Run [{next_run}] creating spectrogram {Path(output_file_path).name}.")
+    logging.info(f"Run [{next_run}] creating spectrogram {Path(output_file_path).name}")
 
     # Defaults if not set in config.ini
     colormap = 'jet'
@@ -30,8 +30,8 @@ def create_spectrogram(wav_file=None, output_file_path=None, next_run=None, star
     max_freq_hz = 2500
     base_freq_hz = 0
     spec_noverlap = spec_nfft / 2
-    title = "No title set in config.ini."
-    subtitle = "No subtitle set in config.ini."
+    title = "No title set in config.ini"
+    subtitle = "No subtitle set in config.ini"
 
     # Retrieve settings.
     if spec_config:
@@ -113,7 +113,7 @@ def upload_latest_png_sftp(config):
     try:
         config_sftp = config['sftp']
     except KeyError:
-        logging.info("SFTP not configured in config.ini, skipping upload.")
+        logging.info("SFTP not configured in config.ini, skipping upload")
         return
 
     host = config_sftp.get('host')
@@ -147,7 +147,7 @@ def spawn_rec_and_process(pool, config, next_run):
 
 
 def record_and_process(config, next_run):
-    logging.info(f"Run [{next_run}] Starting thread.")
+    logging.info(f"Run [{next_run}] Starting thread")
     record(config, next_run)
 
     # Wait a random amount of seconds before generating the spectrogram, this
@@ -186,7 +186,7 @@ def record(config, next_run):
         options.binary_location = config_firefox.get('firefox_location')
     
     # Debug level in geckodriver.log
-    # options.log.level = "trace"
+    options.log.level = "trace"
     
     options.set_preference("browser.download.folderList", 2)
     options.set_preference("browser.download.manager.showWhenStarting", False)
@@ -198,7 +198,7 @@ def record(config, next_run):
     # Start browser
     driver = webdriver.Firefox(options=options)
     try:
-        logging.info(f"Run [{next_run}] Starting browser.")
+        logging.info(f"Run [{next_run}] Starting browser")
         complete_url = f"{config_websdr.get('url')}"
         driver.get(complete_url)
         assert config_websdr.get('in_title') in driver.title
@@ -207,7 +207,7 @@ def record(config, next_run):
         raise
 
     # Configure
-    logging.info(f"Run [{next_run}] Configuring browser, session ID: {driver.session_id}.")
+    logging.info(f"Run [{next_run}] Configuring browser, session ID: {driver.session_id}")
     tries = 0
     while True and driver.session_id:
         try:
@@ -228,16 +228,20 @@ def record(config, next_run):
             # Try 3 times, with 1/2 second pause.
             for _ in range(3):
                 # Set volume to zero, mute will also mute the recording.
-                logging.info('Set volume to 0.')
+                logging.info('Set volume to 0')
                 driver.execute_script(f"soundapplet.setvolume('0');")
 
                 # Disable waterfall (blind mode).
-                logging.info('Disable waterfall.')
+                logging.info('Disable waterfall')
                 driver.execute_script("setview(3);")
 
                 # Set frequency, mode, band, width.
                 logging.info(f"Set params: {soundapplet_params}")
                 driver.execute_script(f'soundapplet.setparam("{soundapplet_params}");')
+
+                # Resume audio
+                logging.info('Resume audio')
+                driver.execute_script("soundapplet.audioresume();")
 
                 time.sleep(0.5)
 
@@ -248,14 +252,14 @@ def record(config, next_run):
             config_time_sec = config_schedule.getint('config_time_sec')
             record_start = next_run + timedelta(seconds=config_time_sec)
             record_stop = record_start + timedelta(minutes=slot_length_min)
-            logging.info(f"Run [{next_run}] Start recording at: {record_start}.")
-            logging.info(f"Run [{next_run}] Stop recording at:  {record_stop}.")
+            logging.info(f"Run [{next_run}] Start recording at: {record_start}")
+            logging.info(f"Run [{next_run}] Stop recording at:  {record_stop}")
 
             s.enterabs(record_start.timestamp(), 0, driver.execute_script, argument=("record_start();",))
             s.enterabs(record_stop.timestamp(), 0, driver.execute_script, argument=("record_stop();",))
             s.run()
 
-            logging.info(f"Run [{next_run}] Downloading audio.")
+            logging.info(f"Run [{next_run}] Downloading audio")
 
             for link_text in ["save", "download"]:
                 try:
@@ -278,7 +282,7 @@ def record(config, next_run):
             time.sleep(1)
 
     # Close browser.
-    logging.info(f"Run [{next_run}] Closing browser.")
+    logging.info(f"Run [{next_run}] Closing browser")
     driver.close()
 
 
@@ -311,7 +315,7 @@ def process(config, next_run):
     # The download filename is wrong. It is based on website's variables, which we don't use.
     # Here we rename the WAV file.
     latest_file = latest_file.rename(Path(download_dir, f"{filename_timestamp}.wav"))
-    logging.info(f"Run [{next_run}] Latest file is: {latest_file.name}.")
+    logging.info(f"Run [{next_run}] Latest file is: {latest_file.name}")
 
     output_filename = f"{filename_timestamp}.png"
     output_file_path = Path(download_dir, output_filename)
@@ -332,13 +336,13 @@ def delete_old_files(root_dir_path, days):
         file_path = os.path.join(root_dir_path, file)
         if os.path.isfile(file_path):
             if (current_time - os.stat(file_path).st_mtime) > days * 86400:
-                logging.info(f"Deleting file '{file_path}'.")
+                logging.info(f"Deleting file '{file_path}'")
                 os.remove(file_path)
 
 
 def main():
     logging.basicConfig(format='%(asctime)s %(levelname)s - %(message)s', level=logging.INFO)
-    logging.debug("Start of program.")
+    logging.debug("Start of program")
 
     # Read configuration file. Use config.ini or config_dist.ini if it does not exist.
     config_file = Path('config.ini')
@@ -356,7 +360,7 @@ def main():
 
     next_run = None
     next_run_compare = None
-    logging.info("Entering loop.")
+    logging.info("Entering loop")
     while True:
         current_time = datetime.now(timezone.utc)
         # Get a list of all minutes and step by slot_minute
@@ -392,7 +396,7 @@ def main():
 
         # Set up and configure scheduler
         if next_run:
-            logging.info(f"Scheduling next session at: {next_run}.")
+            logging.info(f"Scheduling next session at: {next_run}")
             s = sched.scheduler(time.time, time.sleep)
             s.enterabs(next_run.timestamp(), 0, spawn_rec_and_process, argument=(pool, config, next_run))
             s.run()
