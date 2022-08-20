@@ -1,2 +1,2 @@
-# websdrgrab
+# WebSDRgrab
 WebSDR QRSS Grabber
