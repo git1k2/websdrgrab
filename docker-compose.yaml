@@ -2,3 +2,6 @@ version: "3.7"
 services:
   websdrgrab:
     build: ./src
+  
+    volumes:
+      - ./downloads:/app/downloads
