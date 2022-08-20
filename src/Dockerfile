@@ -21,6 +21,6 @@ RUN curl -sL "https://download.mozilla.org/?product=firefox-latest-ssl&os=linux6
 RUN curl -sL "https://github.com/mozilla/geckodriver/releases/download/v0.31.0/geckodriver-v0.31.0-linux64.tar.gz" | tar -xz -C /usr/local/bin 
 
 # Copy app files
-COPY config_dist.ini grab.py /app/
+COPY config*.ini grab.py /app/
 
 CMD python3 ./grab.py
