@@ -161,9 +161,10 @@ def record_and_process(config, next_run):
     # Delete old files.
     config_default = config['DEFAULT']
     download_dir = Path(config_default.get('download_dir', fallback='downloads'))
+    max_file_age = config_default.get('max_file_age', fallback=7)
     if not download_dir.is_absolute():
         download_dir = Path(Path(__file__).parent, download_dir)
-    delete_old_files(download_dir, 7)
+    delete_old_files(download_dir, max_file_age)
 
     logging.info(f"Run [{next_run}] Thread finished")
 
