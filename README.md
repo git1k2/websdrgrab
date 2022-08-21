@@ -3,7 +3,7 @@ WebSDR QRSS Grabber, grabs QRSS frames from WebSDR servers.
 
 Work in progress ...
 
-![QRSS Spectrogram](doc/latest-twente-30m.png)
+![QRSS Spectrogram](doc/20220818_184000.png)
 
 ## Local build, run, test
 ```
