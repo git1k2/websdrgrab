@@ -2,7 +2,7 @@
 WebSDR QRSS Grabber, grabs QRSS frames from WebSDR servers.
 
 > **Note** \
-> Please inform the owners of the WebSDR of your experiments and using this software. Especially when running for more than a few hours.
+> Please inform the owners of the WebSDR server of your experiments with this software. Especially when running for more than a few hours.
 
 ## Work in progress ...
 
